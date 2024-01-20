@@ -1,5 +1,4 @@
 library(tidyverse)
-library(ggplot2)
 
 Anscombe <- anscombe %>%
   pivot_longer(everything(),
