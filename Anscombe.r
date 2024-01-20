@@ -1,11 +1,11 @@
 library(tidyverse)
 
 Anscombe <- anscombe %>%
-  pivot_longer(everything(),
-    names_to = c(".value", "set"),
-    names_pattern = "(.)(.)"
-  ) %>%
-  arrange(set)
+	pivot_longer(everything(),
+		names_to = c(".value", "set"),
+		names_pattern = "(.)(.)"
+	) %>%
+	arrange(set)
 
 Anscombe %>%
 	group_by(set) %>%
@@ -19,5 +19,5 @@ Anscombe %>%
 	)
 
 ggplot(data = Anscombe, aes(x = x, y = y)) +
-  geom_point() +
-  facet_wrap(~ set)
+	geom_point() +
+	facet_wrap(~ set)
