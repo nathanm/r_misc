@@ -20,4 +20,5 @@ Anscombe %>%
 
 ggplot(data = Anscombe, aes(x = x, y = y)) +
 	geom_point() +
+  geom_smooth(method = lm) +
 	facet_wrap(~ set)
