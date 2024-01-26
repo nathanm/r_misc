@@ -1,0 +1,86 @@
+---
+title: "Anscombe"
+author: "Nathan M"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Anscombe's quartet
+
+This dataset is a poignant way to demonstrate how different sets of data can appear similar with summary statistics, yet be wildly different. [The data itself](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/anscombe.html) is included in a base R installation, based on [a 1973 paper](https://doi.org/10.2307/2682899) by Francis Anscombe. However, as installed, it is not particularly well-suited for analysis or visualization.
+```{r}
+anscombe
+```
+
+That can be easily fixed with some simple data tidying.
+```{r}
+Anscombe <- anscombe %>%
+	pivot_longer(
+	  everything(),
+		names_to = c(".value", "set"),
+		names_pattern = "(.)(.)"
+	) %>%
+	arrange(set)
+Anscombe
+```
+
+The demonstration starts by showing a few summary statistics, which are mostly identical, and none more than 1/100th different.
+```{r}
+Anscombe %>%
+	group_by(set) %>%
+	summarize(
+		N = n(), 
+		mean.x = mean(x), 
+		sd.x = sd(x), 
+		mean.y = mean(y), 
+		sd.y = sd(y), 
+		corr.xy = cor(x, y)
+	)
+```
+
+However, by simply plotting the data, their stark differences become apparent.
+```{r}
+ggplot(data = Anscombe, aes(x = x, y = y)) +
+	geom_point() +
+	facet_wrap(~ set)
+```
+
+Adding trend lines reinforces how they initially appeared similar, based only on their summary statistics.
+```{r}
+ggplot(data = Anscombe, aes(x = x, y = y)) +
+	geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+	facet_wrap(~ set)
+```
+
+This stresses the importance of data visualization in exploratory data analysis, in a way that students will remember.
+
+## Other examples
+
+Since Anscombe's quartet has become well known, others have created analogous datasets to demonstrate similar points, to an even greater degree of absurdity. For example, here are the summary statistics and a plot of [The Datasaurus Dozen](https://www.research.autodesk.com/publications/same-stats-different-graphs/).
+
+```{r, echo = FALSE}
+library(datasauRus)
+
+datasaurus_dozen %>%
+	group_by(dataset) %>%
+	summarize(
+		N = n(), 
+		mean.x = mean(x), 
+		sd.x = sd(x), 
+		mean.y = mean(y), 
+		sd.y = sd(y), 
+		corr.xy = cor(x, y)
+	)
+
+ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset)) +
+  geom_point() +
+  theme_void() +
+  theme(legend.position = "none") +
+  facet_wrap(~dataset, ncol = 3)
+```
